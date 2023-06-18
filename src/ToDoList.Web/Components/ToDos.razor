@@ -1,0 +1,35 @@
+﻿@using ToDoList.DTOs
+@using ToDoList.Web.Services
+@inject IToDoService Service
+
+@if (Done)
+{
+    <h3>Done</h3>
+}
+@if (!Done)
+{
+    <h3>ToDo</h3>
+}
+
+@foreach (var todo in Todos)
+{
+    <ToDo Todo=@todo Done="@Done" Refresh="Refresh" />
+}
+
+@code {
+    [Parameter]
+    public bool Done { get; set; }
+    
+    ToDoResponse[] Todos = Array.Empty<ToDoResponse>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Todos = Done ? await Service.GetDone() : await Service.GetTodos();
+    }
+
+    async Task Refresh()
+    {
+        Todos = Done ? await Service.GetDone() : await Service.GetTodos();
+        StateHasChanged();
+    }
+}
